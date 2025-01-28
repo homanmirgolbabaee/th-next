@@ -2,7 +2,7 @@
 import { Toolhouse } from '@toolhouseai/sdk';
 import OpenAI from 'openai';
 
-const MODEL = 'gpt-4o-mini';
+const MODEL = 'llama3-8b-8192';
 
 if (!process.env.NEXT_PUBLIC_TOOLHOUSE_API_KEY) {
   throw new Error('Missing NEXT_PUBLIC_TOOLHOUSE_API_KEY');
