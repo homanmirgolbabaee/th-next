@@ -1,10 +1,17 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { Send, Terminal, Wifi, Shield, Database } from 'lucide-react';
+declare global {
+  interface Window {
+    webkitSpeechRecognition: any;
+    SpeechRecognition: any;
+  }
+}
+
+import { useState, useRef, useEffect, useCallback, SetStateAction } from 'react';
+import { Send, Terminal, Wifi, Shield, Database, Mic, MicOff } from 'lucide-react';
 import MessageBubble from './MessageBubble';
 import { useTheme } from './ThemeContext';
-
+import ChatTemplates from './ChatTemplates';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -19,7 +26,8 @@ export default function ChatWindow() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [accessCode] = useState(() => Math.random().toString(36).substring(7).toUpperCase());
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = useCallback(() => {
@@ -29,8 +37,63 @@ export default function ChatWindow() {
   }, []);
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, scrollToBottom]);
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      console.error('Speech recognition not supported');
+      return;
+    }
+  
+    try {
+      const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = true;
+      recognitionRef.current.lang = 'en-US';
+  
+      // Add error handler
+      recognitionRef.current.onerror = (event: any) => {
+        console.error('Speech recognition error:', event.error);
+        setIsListening(false);
+      };
+    } catch (error) {
+      console.error('Error initializing speech recognition:', error);
+    }
+  
+    return () => {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch (error) {
+          console.error('Error stopping speech recognition:', error);
+        }
+      }
+    };
+  }, []);
+  
+  const toggleListening = () => {
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+    } else {
+      try {
+        recognitionRef.current.onresult = (event: any) => {
+          const transcript = Array.from(event.results)
+            .map((result: any) => result[0])
+            .map(result => result.transcript)
+            .join('');
+          setInput(transcript);
+        };
+  
+        recognitionRef.current.onend = () => {
+          setIsListening(false);
+        };
+  
+        recognitionRef.current?.start();
+        setIsListening(true);
+      } catch (err) {
+        console.error('Failed to start speech recognition:', err);
+      }
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -157,20 +220,28 @@ export default function ChatWindow() {
         }
       `}>
         {messages.length === 0 && (
-          <div className="text-center py-8">
-            {isCyberpunk ? (
-              <>
-                <div className="mb-4 font-mono text-xl text-[#00ff00] animate-pulse">[SYSTEM READY]</div>
-                <p className="font-mono text-[#00ff00]/70">INITIALIZING QUANTUM INTERFACE...</p>
-                <p className="font-mono text-[#00ff00]/70 mt-2">ENTER COMMAND SEQUENCE</p>
-              </>
-            ) : (
-              <>
-                <div className="mb-4 text-4xl">👋</div>
-                <p className="text-lg font-medium mb-2">Welcome to Toolhouse Assistant!</p>
-                <p className="text-blue-400 mt-2 text-sm">Ask me anything...</p>
-              </>
-            )}
+          <div className="space-y-8">
+            <div className="text-center py-8">
+              {isCyberpunk ? (
+                <>
+                  <div className="mb-4 font-mono text-xl text-[#00ff00] animate-pulse">[SYSTEM READY]</div>
+                  <p className="font-mono text-[#00ff00]/70">INITIALIZING QUANTUM INTERFACE...</p>
+                  <p className="font-mono text-[#00ff00]/70 mt-2">SELECT_OPERATION || ENTER_COMMAND</p>
+                </>
+              ) : (
+                <>
+                  <div className="mb-4 text-4xl">👋</div>
+                  <p className="text-lg font-medium mb-2">Welcome to Toolhouse Assistant!</p>
+                  <p className="text-blue-400 mt-2 text-sm">Choose a template or ask anything...</p>
+                </>
+              )}
+            </div>
+            
+            <ChatTemplates 
+              onTemplateSelect={(query: SetStateAction<string>) => {
+                setInput(query);
+              }} 
+            />
           </div>
         )}
         {messages.map((message, index) => (
@@ -215,6 +286,27 @@ export default function ChatWindow() {
             placeholder={isCyberpunk ? "ENTER COMMAND >_" : "Type your message..."}
             disabled={isLoading}
           />
+          <button
+            type="button"
+            onClick={toggleListening}
+            disabled={isLoading || isListening}
+            className={`
+              px-4 py-3 rounded transition-all duration-200 flex items-center justify-center
+              ${isCyberpunk
+                ? `bg-[#001100] hover:bg-[#002200] border border-[#00ff00]/30 text-[#00ff00] 
+                   ${isListening ? 'ring-2 ring-[#00ff00] animate-pulse' : ''}`
+                : `bg-gray-700 hover:bg-gray-600 text-gray-300 hover:text-white
+                   ${isListening ? 'ring-2 ring-red-500 animate-pulse' : ''}`
+              }
+              disabled:opacity-50
+            `}
+            >
+              {isListening ? (
+                <MicOff className={`h-5 w-5 ${isCyberpunk ? 'text-[#00ff00]' : 'text-red-400'}`} />
+              ) : (
+                <Mic className="h-5 w-5" />
+              )}              
+            </button>
           <button
             type="submit"
             disabled={isLoading}

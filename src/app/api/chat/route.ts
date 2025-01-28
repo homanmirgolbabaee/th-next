@@ -3,7 +3,7 @@ import { Toolhouse } from '@toolhouseai/sdk';
 import OpenAI from 'openai';
 import { NextResponse } from 'next/server';
 
-const MODEL = 'llama3-70b-8192';
+const MODEL = 'llama3-8b-8192';
 
 const toolhouse = new Toolhouse({
   apiKey: process.env.TOOLHOUSE_API_KEY,
