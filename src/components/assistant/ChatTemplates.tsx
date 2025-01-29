@@ -1,5 +1,5 @@
 import { useTheme } from './ThemeContext';
-import { Search, Code, BrainCircuit, MessageSquarePlus } from 'lucide-react';
+import { Search, Code, BrainCircuit, MessageSquarePlus, Globe } from 'lucide-react';
 
 interface ChatTemplatesProps {
   onTemplateSelect: (query: string) => void;
@@ -11,12 +11,12 @@ export default function ChatTemplates({ onTemplateSelect }: ChatTemplatesProps) 
 
   const templates = [
     {
-      icon: <Search className={isCyberpunk ? "text-[#00ff00]" : "text-blue-400"} />,
-      title: isCyberpunk ? "QUERY_DATA" : "Search Data",
+      icon: <Globe className={isCyberpunk ? "text-[#00ff00]" : "text-blue-400"} />,
+      title: isCyberpunk ? "QUERY_DATA" : "Search Internet",
       description: isCyberpunk 
-        ? "ACCESS_TOOLHOUSE_ANALYTICS" 
-        : "Search through your Toolhouse analytics and metrics",
-      query: "Show me the latest analytics data from my Toolhouse account"
+        ? "SEARCH_INTERNET" 
+        : "Search through Internet with LLM",
+      query: "use web_search tool Search Internet query= perform a web search and list {Toolhouse.ai} competitors"
     },
     {
       icon: <Code className={isCyberpunk ? "text-[#00ff00]" : "text-blue-400"} />,
