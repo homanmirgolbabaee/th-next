@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, ReactNode } from 'react';
 
-type Theme = 'modern' | 'cyberpunk';
+type Theme = 'modern' | 'cyberpunk' | 'retro';
 
 interface ThemeContextType {
   theme: Theme;

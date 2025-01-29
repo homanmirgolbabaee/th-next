@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, Mic, MicOff } from 'lucide-react';
+import { Send, Mic, MicOff, Loader2 } from 'lucide-react';
 import MessageBubble from './MessageBubble';
 import { useTheme } from './ThemeContext';
 import ChatTemplates from './ChatTemplates';
@@ -12,6 +12,9 @@ export default function ChatWindow() {
   const { theme } = useTheme();
   const { currentChat, addMessage, updateMessageStatus } = useChat();
   const isCyberpunk = theme === 'cyberpunk';
+  const isRetro = theme === 'retro'; // Add this line
+
+
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
@@ -82,6 +85,81 @@ export default function ChatWindow() {
       if (!response.ok) throw new Error('Failed to get response');
       
       const data = await response.json();
+      const RetroStyles = () => isRetro ? (
+        <style jsx global>{`
+          .retro-input-container {
+            position: relative;
+            background-image: linear-gradient(0deg, #2c2c2c 25%, #323232 25%, #323232 50%, #2c2c2c 50%, #2c2c2c 75%, #323232 75%, #323232 100%);
+            background-size: 4px 4px;
+          }
+      
+          .retro-input-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+              0deg,
+              rgba(0, 0, 0, 0.1),
+              rgba(0, 0, 0, 0.1) 1px,
+              transparent 1px,
+              transparent 2px
+            );
+            pointer-events: none;
+          }
+      
+          .retro-button {
+            position: relative;
+            image-rendering: pixelated;
+            transform-style: preserve-3d;
+            transition: all 0.1s ease;
+          }
+      
+          .retro-button:active {
+            transform: translateY(2px);
+          }
+      
+          .retro-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+            pointer-events: none;
+          }
+      
+          .retro-input {
+            image-rendering: pixelated;
+            letter-spacing: 1px;
+          }
+      
+          @keyframes scanline {
+            0% {
+              transform: translateY(-100%);
+            }
+            100% {
+              transform: translateY(100%);
+            }
+          }
+      
+          .retro-scanline::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            animation: scanline 4s linear infinite;
+            pointer-events: none;
+          }
+        `}</style>
+      ) : null;
+      
       
       // Update user message status to sent
       if (currentChat) {
@@ -142,6 +220,10 @@ export default function ChatWindow() {
     }
   };
 
+  const RetroStyles = () => isRetro ? (
+    <style jsx global>{`...`}</style>
+  ) : null;
+
   return (
     <div className={`
       flex flex-col h-screen w-full overflow-hidden transition-all duration-500
@@ -149,6 +231,7 @@ export default function ChatWindow() {
         ? 'bg-black border-l border-[#00ff00]/30'
         : 'bg-gradient-to-b from-gray-900 to-gray-800'}
     `}>
+      {RetroStyles()}
       {/* Messages Area */}
       <div className={`
         flex-1 overflow-y-auto p-6
@@ -203,43 +286,72 @@ export default function ChatWindow() {
         </div>
       </div>
       
-      {/* Input Area */}
+      {/* Enhanced Input Area */}
       <div className={`
-        border-t w-full
+        border-t w-full transition-all duration-300
         ${isCyberpunk
           ? 'border-[#00ff00]/30 bg-black/90'
+          : isRetro
+          ? 'border-4 border-gray-800 bg-gray-700 retro-input-container'
           : 'border-gray-700/50 bg-gray-900/50 backdrop-blur-sm'
         }
-      `}>
+        ${isRetro && 'relative overflow-hidden'}
+        `}>
         <form onSubmit={handleSubmit} className="max-w-6xl mx-auto p-4">
-          <div className="flex space-x-4">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              className={`
-                flex-1 px-4 py-3 rounded transition-all duration-200
-                ${isCyberpunk
-                  ? 'bg-black/50 text-[#00ff00] font-mono border border-[#00ff00]/30 focus:border-[#00ff00] focus:ring-1 focus:ring-[#00ff00]/50 placeholder-[#00ff00]/30'
-                  : 'bg-gray-800/50 text-gray-100 border border-gray-700/50 focus:ring-2 focus:ring-blue-500/50 focus:border-transparent placeholder-gray-500'
-                }
-              `}
-              placeholder={isCyberpunk ? "ENTER COMMAND >_" : "Type your message..."}
-              disabled={isLoading}
-            />
+          <div className="flex items-end space-x-4">
+            <div className="relative flex-1 group">
+              <textarea
+                value={input}
+                onChange={(e) => {
+                  setInput(e.target.value);
+                  // Auto-resize logic
+                  e.target.style.height = 'inherit';
+                  e.target.style.height = `${Math.min(200, Math.max(63, e.target.scrollHeight))}px`;
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSubmit(e);
+                  }
+                }}
+                rows={1}
+                className={`
+                  w-full px-4 py-3 pr-12 rounded-lg resize-none transition-all duration-200
+                  ${isCyberpunk
+                    ? 'bg-black/50 text-[#00ff00] font-mono border border-[#00ff00]/30 focus:border-[#00ff00] focus:ring-1 focus:ring-[#00ff00]/50 placeholder-[#00ff00]/30'
+                    : isRetro
+                    ? 'bg-gray-800 text-white border-4 border-gray-900 focus:border-gray-700 font-[Press_Start_2P] text-sm placeholder-gray-400 retro-input shadow-[inset_2px_2px_0px_0px_rgba(0,0,0,0.5)]'
+                    : 'bg-gray-800/50 text-gray-100 border border-gray-700/50 focus:ring-2 focus:ring-blue-500/50 focus:border-transparent placeholder-gray-500'
+                  }
+                `}
+                placeholder={isCyberpunk ? "ENTER_COMMAND >_" : "Type your message..."}
+                disabled={isLoading}
+              />
+              {/* Character count */}
+              <div className={`
+                absolute right-3 bottom-3 transition-opacity duration-200
+                ${input.length > 0 ? 'opacity-100' : 'opacity-0'}
+                ${isCyberpunk ? 'text-[#00ff00]/50' : 'text-gray-400'}
+                text-xs
+              `}>
+                {input.length} chars
+              </div>
+            </div>
+
             <button
               type="button"
               onClick={toggleListening}
-              disabled={isLoading || isListening}
+              disabled={isLoading}
               className={`
-                px-4 py-3 rounded transition-all duration-200 flex items-center justify-center
+                group px-4 py-3 h-[63px] rounded-lg transition-all duration-300 flex items-center justify-center
+                hover:scale-105 active:scale-95
                 ${isCyberpunk
                   ? `bg-[#001100] hover:bg-[#002200] border border-[#00ff00]/30 text-[#00ff00] 
                      ${isListening ? 'ring-2 ring-[#00ff00] animate-pulse' : ''}`
                   : `bg-gray-700 hover:bg-gray-600 text-gray-300 hover:text-white
                      ${isListening ? 'ring-2 ring-red-500 animate-pulse' : ''}`
                 }
-                disabled:opacity-50
+                disabled:opacity-50 disabled:hover:scale-100
               `}
             >
               {isListening ? (
@@ -248,23 +360,35 @@ export default function ChatWindow() {
                 <Mic className="h-5 w-5" />
               )}
             </button>
+
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || !input.trim()}
               className={`
-                px-6 py-3 rounded transition-all duration-200 flex items-center justify-center disabled:opacity-50
+                group px-6 py-3 h-[63px] rounded-lg transition-all duration-300 
+                flex items-center justify-center
+                hover:scale-105 active:scale-95
+                disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100
                 ${isCyberpunk
                   ? 'bg-[#001100] hover:bg-[#002200] border border-[#00ff00]/30 text-[#00ff00] font-mono hover:shadow-[0_0_10px_rgba(0,255,0,0.2)]'
-                  : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 disabled:from-blue-800 disabled:to-blue-900 text-white shadow-lg'
-                }
+                  : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 disabled:from-blue-800 disabled:to-blue-900 text-white shadow-lg'}
               `}
             >
-              {isCyberpunk && <span className="mr-2">[EXECUTE]</span>}
-              <Send className="h-5 w-5" />
+              {isLoading ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <>
+                  {isCyberpunk && <span className="mr-2">[EXECUTE]</span>}
+                  <Send className={`h-5 w-5 transition-transform duration-300 ${!isCyberpunk && 'group-hover:translate-x-1'}`} />
+                </>
+              )}
             </button>
           </div>
         </form>
       </div>
+
+
+
     </div>
   );
 }
