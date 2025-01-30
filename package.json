@@ -11,6 +11,7 @@
   "dependencies": {
     "@11labs/client": "^0.0.5",
     "@pinecone-database/pinecone": "^4.1.0",
+    "@shadcn/ui": "^0.0.4",
     "@toolhouseai/sdk": "^1.1.4",
     "framer-motion": "^12.0.6",
     "lucide-react": "^0.474.0",

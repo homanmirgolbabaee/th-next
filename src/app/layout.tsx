@@ -1,20 +1,16 @@
+// src/app/layout.tsx
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { ThemeProvider } from '@/components/assistant/ThemeContext'
-import { ChatProvider } from '@/components/assistant/ChatContext'
-import ErrorBoundary from '@/components/assistant/ErrorBoundary'
+import { ThemeProvider } from '@/components/assistant/context/ThemeContext'
+import { ChatProvider } from '@/components/assistant/context/ChatContext'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Toolhouse Assistant',
-  description: 'Your AI-powered helper for getting things done',
-  viewport: 'width=device-width, initial-scale=1',
-  icons: {
-    icon: '/favicon.ico',
-  },
-};
+  description: 'AI-powered chat assistant',
+}
 
 export default function RootLayout({
   children,
@@ -22,13 +18,14 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="en" className="dark">
+      <head>
+        <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Press+Start+2P&display=swap" rel="stylesheet" />
+      </head>
+      <body className={`${inter.className} bg-black min-h-screen`}>
         <ThemeProvider>
           <ChatProvider>
-            <ErrorBoundary>
-              {children}
-            </ErrorBoundary>
+            {children}
           </ChatProvider>
         </ThemeProvider>
       </body>

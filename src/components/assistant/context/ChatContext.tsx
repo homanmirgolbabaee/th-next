@@ -36,10 +36,11 @@ const ChatContext = createContext<ChatContextType | undefined>(undefined);
 export function ChatProvider({ children }: { children: React.ReactNode }) {
   const [currentChat, setCurrentChat] = useState<Chat | null>(null);
   const [chats, setChats] = useState<Chat[]>([]);
-
+  const [chatCounter, setChatCounter] = useState(1);
   // Load chats from localStorage on mount
   useEffect(() => {
     const savedChats = localStorage.getItem('chats');
+    const savedCounter = localStorage.getItem('chatCounter');
     if (savedChats) {
       try {
         const parsedChats = JSON.parse(savedChats, (key, value) => {
@@ -58,27 +59,31 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         localStorage.removeItem('chats');
       }
     }
+
+    if (savedCounter) {
+      setChatCounter(parseInt(savedCounter, 10));
+    }
+
   }, []);
 
   // Save chats to localStorage when they change
+  // Save counter to localStorage when it changes
   useEffect(() => {
-    try {
-      localStorage.setItem('chats', JSON.stringify(chats));
-    } catch (error) {
-      console.error('Error saving chats:', error);
-    }
-  }, [chats]);
+    localStorage.setItem('chatCounter', chatCounter.toString());
+  }, [chatCounter]);
 
   const createNewChat = () => {
     const newChat: Chat = {
       id: `chat-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      title: 'New Chat',
+      title: `Chat ${chatCounter}`,
       date: new Date().toISOString().split('T')[0],
       messages: [],
       lastUpdated: new Date()
     };
+    
     setChats(prevChats => [newChat, ...prevChats]);
     setCurrentChat(newChat);
+    setChatCounter(prev => prev + 1);
   };
 
   const addMessage = (message: Omit<Message, 'id'>) => {
@@ -98,16 +103,20 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       };
       setChats(prevChats => [newChat, ...prevChats]);
       setCurrentChat(newChat);
+      setChatCounter(prev => prev + 1);
     } else {
+      // Update existing chat title only if it's still the default
+      const shouldUpdateTitle = currentChat.title.startsWith('Chat ') && 
+                              currentChat.messages.length === 0 && 
+                              message.role === 'user';
+
       const updatedChat: Chat = {
         ...currentChat,
         messages: [...currentChat.messages, messageWithId],
         lastUpdated: new Date(),
-
-        title: currentChat.messages.length === 0 && message.role === 'user' 
+        title: shouldUpdateTitle 
           ? message.content.slice(0, 30) + '...'
           : currentChat.title
-
       };
 
       setChats(prevChats => 
@@ -143,7 +152,9 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const clearAllChats = () => {
     setChats([]);
     setCurrentChat(null);
+    setChatCounter(1);
     localStorage.removeItem('chats');
+    localStorage.removeItem('chatCounter');
   };
 
   return (

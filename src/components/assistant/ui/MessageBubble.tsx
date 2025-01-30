@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from 'react';
 import { Copy, Share2, Clock, User, Bot, Volume2, Pause, Loader2 } from 'lucide-react';
-import { useTheme } from './ThemeContext';
+import { useTheme } from '../context/ThemeContext';
 
 interface Message {
   id: string;
@@ -388,7 +388,7 @@ const MessageFooter = ({
       >
         <Copy className="w-4 h-4" />
       </button>
-    </div>
+    </div>  
   </div>
 );
 

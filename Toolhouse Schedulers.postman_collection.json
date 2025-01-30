@@ -1,0 +1,205 @@
+{
+	"info": {
+		"_postman_id": "5b71d100-2f75-4e40-a189-73fd0ca8f3f2",
+		"name": "Toolhouse Schedulers",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29280240"
+	},
+	"item": [
+		{
+			"name": "Convert to Cron",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.toolhouse.ai/v1/schedules/text-to-cron?cron=every 10 minute",
+					"protocol": "https",
+					"host": [
+						"api",
+						"toolhouse",
+						"ai"
+					],
+					"path": [
+						"v1",
+						"schedules",
+						"text-to-cron"
+					],
+					"query": [
+						{
+							"key": "cron",
+							"value": "every 10 minute"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Scheduled Run",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"chat_id\": \"3eebe784-3955-4051-9b93-a2688c3bcdce\",\r\n  \"cadence\": \"*/10 * * * *\",\r\n  \"bundle\": \"bundle_1\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://api.toolhouse.ai/v1/schedules",
+					"protocol": "https",
+					"host": [
+						"api",
+						"toolhouse",
+						"ai"
+					],
+					"path": [
+						"v1",
+						"schedules"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List Schedules",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.toolhouse.ai/v1/schedules",
+					"protocol": "https",
+					"host": [
+						"api",
+						"toolhouse",
+						"ai"
+					],
+					"path": [
+						"v1",
+						"schedules"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Schedule by ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.toolhouse.ai/v1/schedules/{SCHEDULE_ID}",
+					"protocol": "https",
+					"host": [
+						"api",
+						"toolhouse",
+						"ai"
+					],
+					"path": [
+						"v1",
+						"schedules",
+						"{SCHEDULE_ID}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Schedule",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"cadence\": \"0 */3 * * *\",\r\n  \"active\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://api.toolhouse.ai/v1/schedules/{SCHEDULE_ID}",
+					"protocol": "https",
+					"host": [
+						"api",
+						"toolhouse",
+						"ai"
+					],
+					"path": [
+						"v1",
+						"schedules",
+						"{SCHEDULE_ID}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Pause Schedule",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"active\": false\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://api.toolhouse.ai/v1/agent-runs/{SCHEDULE_ID}",
+					"protocol": "https",
+					"host": [
+						"api",
+						"toolhouse",
+						"ai"
+					],
+					"path": [
+						"v1",
+						"agent-runs",
+						"{SCHEDULE_ID}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "th-bB2yNQLo8CNwn6xXxnrF-Od_fM0Sbxc6-VicU9bc1W8",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

@@ -1,8 +1,8 @@
 'use client';
 
-import { useTheme } from './ThemeContext';
+import { useTheme } from '../context/ThemeContext';
 import Modal from './Modal';
-import { Volume2, Mic, Globe, Cpu } from 'lucide-react';
+import { Volume2, Mic, Globe, Cpu, Monitor, Terminal, Gamepad2 } from 'lucide-react';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -10,10 +10,29 @@ interface SettingsModalProps {
 }
 
 export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
-  const { theme } = useTheme();
+  const { theme, toggleTheme } = useTheme();
   const isCyberpunk = theme === 'cyberpunk';
 
+  // Get current theme display name
+  const getThemeName = () => {
+    switch (theme) {
+      case 'cyberpunk':
+        return 'Cyberpunk';
+      case 'retro':
+        return 'Retro';
+      default:
+        return 'Modern';
+    }
+  };
+
   const settings = [
+    {
+      icon: <Monitor className="w-5 h-5" />,
+      title: 'Theme',
+      description: 'Change interface theme',
+      value: getThemeName(),
+      action: toggleTheme
+    },
     {
       icon: <Volume2 className="w-5 h-5" />,
       title: 'Text-to-Speech',
@@ -65,7 +84,19 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               </div>
             </div>
             
-            {'enabled' in setting ? (
+            {'action' in setting ? (
+              <button
+                onClick={setting.action}
+                className={`
+                  px-3 py-1 rounded transition-colors
+                  ${isCyberpunk
+                    ? 'bg-black border border-[#00ff00]/30 text-[#00ff00] hover:border-[#00ff00] hover:bg-[#001100]'
+                    : 'bg-gray-700 hover:bg-gray-600 text-gray-200'}
+                `}
+              >
+                {setting.value}
+              </button>
+            ) : 'enabled' in setting ? (
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
                   type="checkbox"

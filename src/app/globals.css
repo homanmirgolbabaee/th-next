@@ -1,32 +1,45 @@
-/* Font import must come first */
-@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Press+Start+2P&display=swap');
 
-/* Then Tailwind directives */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Root variables */
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
     --foreground-rgb: 255, 255, 255;
     --background-start-rgb: 0, 0, 0;
     --background-end-rgb: 0, 0, 0;
   }
+
+  body {
+    color: rgb(var(--foreground-rgb));
+    background: rgb(var(--background-start-rgb));
+  }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-start-rgb));
+@layer components {
+  .chat-input {
+    @apply w-full px-4 py-3 rounded-lg resize-none transition-all duration-200;
+  }
+
+  .chat-button {
+    @apply px-4 py-3 rounded-lg transition-all duration-300 flex items-center justify-center;
+  }
+
+  .template-card {
+    @apply p-4 rounded-lg transition-all duration-300;
+  }
+
+  .sidebar-tab {
+    @apply flex-1 p-3 text-sm font-medium transition-all duration-200;
+  }
+
+  .sidebar-button {
+    @apply w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-200;
+  }
 }
 
+/* Animations */
 @keyframes fade-in {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -36,42 +49,30 @@ body {
   animation: fade-in 0.3s ease-out;
 }
 
-@keyframes scan {
-  from {
-    transform: translateY(0);
-  }
-  to {
-    transform: translateY(4px);
-  }
+/* Theme-specific styles */
+.theme-cyberpunk {
+  --accent-color: #00ff00;
+  --accent-color-alpha: rgba(0, 255, 0, 0.3);
+  font-family: 'Share Tech Mono', monospace;
 }
 
-.animate-scan {
-  animation: scan 4s linear infinite;
+.theme-retro {
+  font-family: 'Press Start 2P', cursive;
 }
 
-/* Scrollbar styling */
+/* Scrollbar Styles */
 ::-webkit-scrollbar {
   width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #000000;
+  @apply bg-black;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #00ff00;
-  border-radius: 4px;
+  @apply bg-blue-600 rounded-full;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #00cc00;
-}
-
-@keyframes fade-in {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.animate-fade-in {
-  animation: fade-in 0.3s ease-out;
+  @apply bg-blue-500;
 }

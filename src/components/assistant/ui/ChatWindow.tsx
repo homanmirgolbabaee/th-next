@@ -4,9 +4,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Mic, MicOff, Loader2 } from 'lucide-react';
 import MessageBubble from './MessageBubble';
-import { useTheme } from './ThemeContext';
+import { useTheme } from '../context/ThemeContext';
 import ChatTemplates from './ChatTemplates';
-import { useChat } from './ChatContext';
+import { useChat } from '../context/ChatContext';
 
 export default function ChatWindow() {
   const { theme } = useTheme();
@@ -85,77 +85,129 @@ export default function ChatWindow() {
       if (!response.ok) throw new Error('Failed to get response');
       
       const data = await response.json();
+      // Add to globals.css
       const RetroStyles = () => isRetro ? (
         <style jsx global>{`
-          .retro-input-container {
+          /* Classic retro gaming styles */
+          .retro-container {
+            background-color: #1a1b1e;
+            background-image: 
+              linear-gradient(
+                rgba(255, 255, 255, 0.03) 2px, 
+                transparent 2px
+              ),
+              linear-gradient(
+                90deg, 
+                rgba(255, 255, 255, 0.03) 2px, 
+                transparent 2px
+              );
+            background-size: 32px 32px;
             position: relative;
-            background-image: linear-gradient(0deg, #2c2c2c 25%, #323232 25%, #323232 50%, #2c2c2c 50%, #2c2c2c 75%, #323232 75%, #323232 100%);
-            background-size: 4px 4px;
+            font-family: 'Press Start 2P', cursive;
           }
-      
-          .retro-input-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: repeating-linear-gradient(
-              0deg,
-              rgba(0, 0, 0, 0.1),
-              rgba(0, 0, 0, 0.1) 1px,
-              transparent 1px,
-              transparent 2px
-            );
-            pointer-events: none;
+
+          .retro-text {
+            color: #f8f8f8;
+            text-shadow: 
+              2px 2px 0px #ff004d,
+              -2px -2px 0px #0099db;
+            letter-spacing: 2px;
           }
-      
+
           .retro-button {
+            background: linear-gradient(45deg, #ff004d, #0099db);
+            border: 4px solid #fff;
+            box-shadow: 
+              0 4px 0 #000,
+              inset -4px -4px 0 rgba(0, 0, 0, 0.3);
+            image-rendering: pixelated;
             position: relative;
-            image-rendering: pixelated;
             transform-style: preserve-3d;
-            transition: all 0.1s ease;
           }
-      
+
           .retro-button:active {
-            transform: translateY(2px);
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #000;
           }
-      
-          .retro-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
-            pointer-events: none;
-          }
-      
+
           .retro-input {
-            image-rendering: pixelated;
-            letter-spacing: 1px;
+            background: #000;
+            border: 4px solid #fff;
+            box-shadow: 
+              inset 0 0 10px rgba(255, 255, 255, 0.1),
+              0 0 20px rgba(255, 77, 0, 0.2);
+            color: #0f0;
+            font-family: 'Press Start 2P', cursive;
           }
-      
-          @keyframes scanline {
-            0% {
-              transform: translateY(-100%);
-            }
-            100% {
-              transform: translateY(100%);
-            }
+
+          .retro-card {
+            background: #2a2a2a;
+            border: 4px solid #fff;
+            box-shadow: 
+              8px 8px 0 #000,
+              -8px -8px 0 rgba(255, 77, 0, 0.3);
+            transform: rotate(1deg);
           }
-      
+
+          .retro-card:nth-child(even) {
+            transform: rotate(-1deg);
+          }
+
+          .retro-header {
+            background: linear-gradient(90deg, #ff004d, #0099db);
+            padding: 8px;
+            margin: -8px;
+            margin-bottom: 16px;
+            text-align: center;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            border-bottom: 4px solid #fff;
+          }
+
+          .retro-scanline {
+            position: relative;
+            overflow: hidden;
+          }
+
           .retro-scanline::after {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
-            background: rgba(255,255,255,0.1);
-            animation: scanline 4s linear infinite;
-            pointer-events: none;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            animation: scanline 6s linear infinite;
+          }
+
+          @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+          }
+
+          .retro-glow {
+            text-shadow: 
+              0 0 10px #fff,
+              0 0 20px #fff,
+              0 0 30px #ff004d,
+              0 0 40px #0099db;
+          }
+
+          .pixel-corners {
+            clip-path: polygon(
+              0 8px,
+              8px 8px,
+              8px 0,
+              calc(100% - 8px) 0,
+              calc(100% - 8px) 8px,
+              100% 8px,
+              100% calc(100% - 8px),
+              calc(100% - 8px) calc(100% - 8px),
+              calc(100% - 8px) 100%,
+              8px 100%,
+              8px calc(100% - 8px),
+              0 calc(100% - 8px)
+            );
           }
         `}</style>
       ) : null;
@@ -237,6 +289,8 @@ export default function ChatWindow() {
         flex-1 overflow-y-auto p-6
         ${isCyberpunk
           ? 'font-mono text-[#00ff00] bg-[linear-gradient(to_bottom,#000000,#001100)]'
+          : isRetro
+          ? 'font-[Press_Start_2P] text-white bg-[linear-gradient(to_bottom,#1a1a1a,#2a2a2a)]'
           : 'text-gray-100'}
       `}>
         <div className="max-w-6xl mx-auto space-y-6">

@@ -1,7 +1,7 @@
 'use client';
 
-import { useTheme } from './ThemeContext';
 import { X } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 
 interface ModalProps {
   isOpen: boolean;

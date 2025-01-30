@@ -1,24 +1,18 @@
-// page.tsx
-import ChatWindow from '@/components/assistant/ChatWindow';
-import { ThemeProvider } from '@/components/assistant/ThemeContext';
-import { ChatProvider } from '@/components/assistant/ChatContext';
-import ThemeToggle from '@/components/assistant/ThemeToggle';
-import Sidebar from '@/components/assistant/Sidebar';
+'use client';
 
-export default function Home() {
+import { useState } from 'react';
+import Sidebar from '../components/assistant/ui/Sidebar';
+import ChatWindow from '../components/assistant/ui/ChatWindow';
+
+export default function HomePage() {
+  const [activeTab, setActiveTab] = useState<'chats' | 'schedules'>('chats');
+
   return (
-    <ThemeProvider>
-      <ChatProvider>
-        <div className="min-h-screen bg-gradient-to-b from-gray-950 to-gray-900">
-          <Sidebar />
-          <div className="ml-16 lg:ml-64 h-screen flex flex-col">
-            <ThemeToggle />
-            <div className="flex-1 flex flex-col h-full">
-              <ChatWindow />
-            </div>
-          </div>
-        </div>
-      </ChatProvider>
-    </ThemeProvider>
+    <div className="flex h-screen bg-gray-900">
+      <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
+      <main className="flex-1 ml-64 overflow-hidden">
+        <ChatWindow />
+      </main>
+    </div>
   );
 }
