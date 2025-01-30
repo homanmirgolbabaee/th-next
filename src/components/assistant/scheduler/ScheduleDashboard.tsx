@@ -1,4 +1,3 @@
-// ScheduleDashboard.tsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Calendar, Clock, RefreshCw, Plus,
@@ -31,20 +30,18 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 
-// Tooltip components
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger
-} from "../ui/tooltip";
-
 // Other components
 import Alert from "../ui/alert";
 import AlertDescription from "../ui/alert";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+  TooltipProvider
+} from "../ui/tooltip";
 
 // Service and types
 import { schedulerService } from '../../../services/schedulerService';
@@ -119,16 +116,14 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="chatId">Chat ID</Label>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Info className="h-4 w-4 text-gray-400" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    Enter the Chat ID from your Prompt Studio
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info className="h-4 w-4 text-gray-400" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  Enter the Chat ID from your Prompt Studio
+                </TooltipContent>
+              </Tooltip>
             </div>
             <Input
               id="chatId"
@@ -142,16 +137,14 @@ const ScheduleDialog: React.FC<ScheduleDialogProps> = ({
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="cadence">Cadence</Label>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Info className="h-4 w-4 text-gray-400" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    Use natural language (e.g., "every hour") or cron expression
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info className="h-4 w-4 text-gray-400" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  Use natural language (e.g., "every hour") or cron expression
+                </TooltipContent>
+              </Tooltip>
             </div>
             <Input
               id="cadence"
@@ -204,7 +197,7 @@ const ScheduleCard: React.FC<{
   const nextRun = schedule.cadence ? schedulerService.calculateNextRun(schedule.cadence) : null;
 
   return (
-    <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-all duration-200">
+    <Card className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-all duration-200">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium truncate max-w-[200px]">
           {schedule.chat_id || 'Unnamed Schedule'}
@@ -234,55 +227,49 @@ const ScheduleCard: React.FC<{
           )}
 
           <div className="pt-4 flex justify-end space-x-2">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => onToggleActive(schedule)}
-                  >
-                    {schedule.active 
-                      ? <Pause className="w-4 h-4" />
-                      : <Play className="w-4 h-4" />}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  {schedule.active ? 'Pause Schedule' : 'Activate Schedule'}
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onToggleActive(schedule)}
+                >
+                  {schedule.active 
+                    ? <Pause className="w-4 h-4" />
+                    : <Play className="w-4 h-4" />}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {schedule.active ? 'Pause Schedule' : 'Activate Schedule'}
+              </TooltipContent>
+            </Tooltip>
             
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => onEdit(schedule)}
-                  >
-                    <Edit2 className="w-4 h-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Edit Schedule</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onEdit(schedule)}
+                >
+                  <Edit2 className="w-4 h-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Edit Schedule</TooltipContent>
+            </Tooltip>
             
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => onDelete(schedule)}
-                    className="hover:text-red-500"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Delete Schedule</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onDelete(schedule)}
+                  className="hover:text-red-500"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Delete Schedule</TooltipContent>
+            </Tooltip>
           </div>
         </div>
       </CardContent>
