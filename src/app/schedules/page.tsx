@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Sidebar from '../../components/assistant/ui/Sidebar';
-
+import ScheduleDashboard from '@/components/assistant/scheduler/ScheduleDashboard';
 export default function SchedulesPage() {
   const [activeTab, setActiveTab] = useState<'chats' | 'schedules'>('schedules');
 
@@ -15,6 +15,7 @@ export default function SchedulesPage() {
           {/* Add your schedules content here */}
         </div>
       </main>
+      <ScheduleDashboard />;
     </div>
   );
 }

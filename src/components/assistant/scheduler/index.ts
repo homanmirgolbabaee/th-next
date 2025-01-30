@@ -4,3 +4,4 @@ export { default as ScheduleCard } from './ScheduleCard';
 export { default as ScheduleListItem } from './ScheduleListItem';
 export { default as CreateScheduleModal } from './CreateScheduleModal';
 export { default as EditScheduleModal } from './EditScheduleModal';
+export { default as ScheduleDashboard } from './ScheduleDashboard'; // Add this line
