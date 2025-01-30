@@ -11,7 +11,11 @@
   "dependencies": {
     "@11labs/client": "^0.0.5",
     "@pinecone-database/pinecone": "^4.1.0",
+    "@radix-ui/react-alert-dialog": "^1.1.5",
+    "@radix-ui/react-dialog": "^1.1.5",
+    "@radix-ui/react-label": "^2.1.1",
     "@radix-ui/react-slot": "^1.1.1",
+    "@radix-ui/react-tooltip": "^1.1.7",
     "@shadcn/ui": "^0.0.4",
     "@toolhouseai/sdk": "^1.1.4",
     "class-variance-authority": "^0.7.1",
@@ -24,6 +28,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-textarea-autosize": "^8.5.7",
+    "recharts": "^2.15.1",
     "tailwind-merge": "^2.6.0"
   },
   "devDependencies": {
